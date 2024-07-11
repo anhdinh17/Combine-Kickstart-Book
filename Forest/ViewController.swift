@@ -2,6 +2,7 @@ import UIKit
 import Combine
 
 class ViewController: UIViewController {
+    // Create publisher
     @Published var value = 0 {
         didSet {
             print("📝 Value : \(value.description)")
