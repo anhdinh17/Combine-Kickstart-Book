@@ -3,11 +3,7 @@ import Combine
 
 class ViewController: UIViewController {
     // Create publisher
-    @Published var value = 0 {
-        didSet {
-            print("📝 Value : \(value.description)")
-        }
-    }
+    @Published var value = 0
     
     // Create subscription
     // To keep the connection between publisher and subscriber alive,
@@ -21,11 +17,27 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         cancellable = $value
+        // If initial value is Nil,
+        // compactMap removes Nil before sending down to subscriber.
+//            .compactMap({ int in
+//                // int is value published from $value that is NOT NIL
+//                int
+//            })
+            
+            .dropFirst()
+        
+            .map { publisherOutput in
+                // use .map to turn output of upstream publisher from Int to String
+                return publisherOutput.description
+            }
+        
         // .sink() is subscriber
-            .sink { [weak self] int in
-                // "int" is the value received from Publisher.
-                // In this case, it's an Integer
-                self?.label.text = int.description
+        // In this case, inside .sink's closure, label listens to the change of "stringValue"
+        // which is also the change of Publisher $value through .map
+            .sink { [weak self] stringValue in
+                // "stringValue" is the value received from Publisher.
+                // In this case, it's an String
+                self?.label.text = stringValue
             }
     }
     
